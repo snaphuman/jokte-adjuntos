@@ -10,3 +10,6 @@ la creación o edición de artículos.
 
 Este plugin evita modificar el MVC del compontente de contenido com_content y permitirá
 recuperar adjuntos en diferentes contextos de la plataforma.
+
+
+*Nota:* Este es un trabajo en progreso
