@@ -28,8 +28,38 @@ class plgSystemJokte_Adjuntos extends JPlugin {
     }
 
     function onBeforeRender () {
+
         $app = JFactory::getApplication();
+        $jinput = $app->input;
+
+        // obtiene los parámetros del request e inicializa valores predeterminados para
+        // el contexto de edición de un artículo
+        $reqParams = $jinput->getArray(array('view' => 'article','layout' => 'edit'));
+
+        // termina la ejecución del plugin si los parametros recibidos no cumplen 
+        // con las condiciones preestablecidas para modificar el contexto de edición de
+        // artículos
+        if (array_search(NULL,$reqParams)) return;
+
+        // obtiene el buffer del documento que será renderizado
+        $doc = JFactory::getDocument();
+        $buffer = $doc->getBuffer('component');
+
+        // inicializa la manipulación del DOM para el buffer del documento
+        $dom = new DomDocument;
+        $dom->validateOnParse = true;
+        $dom->loadHTML($buffer);
+
+        // selecciona elemento del DOM  que contendrá los registros de los archivos adjuntos
+        $elAdjuntos = $dom->getElementById("adjuntos");
+
+        // TODO: Cargar subcontrolador que maneja la consulta en la base de datos
+        // para retornar los registros en la tabla adjuntos
+        $elAdjuntos->nodeValue = "Contenedor de  adjuntos";
+
+        // aplica los cambios realizados al DOM en un nuevo buffer para actualizar la presentación
+        // del la vista del componente en el contexto indicado
+        $newBuffer = $dom->saveHTML();
+        $doc->setBuffer($newBuffer,'component');
     }
-
 }
-
