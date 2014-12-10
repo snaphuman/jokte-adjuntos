@@ -36,7 +36,7 @@ class plgSystemJokte_Adjuntos extends JPlugin {
         // el contexto de edición de un artículo
         $reqParams = $jinput->getArray(array('view' => 'article','layout' => 'edit'));
 
-        // termina la ejecución del plugin si los parametros recibidos no cumplen 
+        // termina la ejecución del plugin si los parametros recibidos no cumplen
         // con las condiciones preestablecidas para modificar el contexto de edición de
         // artículos
         if (array_search(NULL,$reqParams)) return;
@@ -53,13 +53,30 @@ class plgSystemJokte_Adjuntos extends JPlugin {
         // selecciona elemento del DOM  que contendrá los registros de los archivos adjuntos
         $elAdjuntos = $dom->getElementById("adjuntos");
 
-        // TODO: Cargar subcontrolador que maneja la consulta en la base de datos
-        // para retornar los registros en la tabla adjuntos
+        // obtiene información del request
+        $jinput = JFactory::getApplication()->input;
+        $id = $jinput->get('id', null, null);
+
+        // obtiene los datos de los adjuntos
+        self::getAttachmentsData($id);
+
         $elAdjuntos->nodeValue = "Contenedor de  adjuntos";
 
         // aplica los cambios realizados al DOM en un nuevo buffer para actualizar la presentación
         // del la vista del componente en el contexto indicado
         $newBuffer = $dom->saveHTML();
         $doc->setBuffer($newBuffer,'component');
+    }
+
+    private function getAttachmentsData ($id) {
+
+        // carga el subcontrolador para ejecutar la tarea mostrar
+        JLoader::register('ContentControllerAdjuntos', JPATH_ADMINISTRATOR . '/components/com_content/controllers/adjuntos.json.php');
+
+        $data = new ContentControllerAdjuntos;
+        $adjuntos = $data->mostrar($id);
+
+        var_dump($adjuntos);
+        return $adjuntos;
     }
 }
