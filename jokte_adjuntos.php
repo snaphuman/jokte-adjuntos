@@ -43,7 +43,7 @@ class plgSystemJokte_Adjuntos extends JPlugin {
 
         // obtiene el buffer del documento que será renderizado
         $doc = JFactory::getDocument();
-        $buffer = $doc->getBuffer('component');
+        $buffer = mb_convert_encoding($doc->getBuffer('component'),'html-entities','utf-8');
 
         // inicializa la manipulación del DOM para el buffer del documento
         $dom = new DomDocument;
