@@ -41,6 +41,9 @@ class plgSystemJokte_Adjuntos extends JPlugin {
         // artículos
         if (array_search(NULL,$reqParams)) return;
 
+        // Obtiene id del artículo 
+        $id = $jinput->get('id', null, null);
+
         // obtiene el buffer del documento que será renderizado
         $doc = JFactory::getDocument();
         $buffer = mb_convert_encoding($doc->getBuffer('component'),'html-entities','utf-8');
@@ -50,16 +53,14 @@ class plgSystemJokte_Adjuntos extends JPlugin {
         $dom->validateOnParse = true;
         $dom->loadHTML($buffer);
 
+        // obtiene los datos de los adjuntos
+        $data = self::getAttachmentsData($id);
+
         // selecciona elemento del DOM  que contendrá los registros de los archivos adjuntos
         $elAdjuntos = $dom->getElementById("adjuntos");
 
-        // obtiene información del request
-        $jinput = JFactory::getApplication()->input;
-        $id = $jinput->get('id', null, null);
 
-        // obtiene los datos de los adjuntos
-        self::getAttachmentsData($id);
-
+        // inicia la modificación del DOM
         $elAdjuntos->nodeValue = "Contenedor de  adjuntos";
 
         // aplica los cambios realizados al DOM en un nuevo buffer para actualizar la presentación
@@ -76,7 +77,6 @@ class plgSystemJokte_Adjuntos extends JPlugin {
         $data = new ContentControllerAdjuntos;
         $adjuntos = $data->mostrar($id);
 
-        var_dump($adjuntos);
         return $adjuntos;
     }
 }
