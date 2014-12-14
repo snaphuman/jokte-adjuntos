@@ -57,11 +57,45 @@ class plgSystemJokte_Adjuntos extends JPlugin {
         $data = self::getAttachmentsData($id);
 
         // selecciona elemento del DOM  que contendrá los registros de los archivos adjuntos
-        $elAdjuntos = $dom->getElementById("adjuntos");
+        $contenedor = $dom->getElementById("adjuntos");
 
+        // realiza la construcción de la tabla con el listado de adjuntos
 
-        // inicia la modificación del DOM
-        $elAdjuntos->nodeValue = "Contenedor de  adjuntos";
+        $adjuntosList = $dom->createElement("form");
+        $adjuntosList->setAttribute("id","list-adjuntos");
+
+        $tabla = $dom->createElement("table");
+        $tbody = $dom->createElement("tbody");
+
+        $c = 0;
+        foreach($data as $item){
+
+            $row = $dom->createElement("tr");
+
+            $check = $dom->createElement("td");
+            $checkBox = $dom->createElement("input");
+            $checkBox->setAttribute("type", "checkbox");
+
+            $file = $dom->createElement("td");
+            $file->nodeValue = $item->nombre_archivo;
+
+            $fileType = $dom->createElement("td");
+            $img = $dom->createElement("img");
+            $img->setAttribute("src", "/media/adjuntos/caneca.png");
+
+            $fileType->appendChild($img);
+            $check->appendChild($checkBox);
+            $row->appendChild($check);
+            $row->appendChild($file);
+            $row->appendChild($fileType);
+
+            $tbody->appendChild($row);
+            $c++;
+        }
+
+        $tabla->appendChild($tbody);
+        $adjuntosList->appendChild($tabla);
+        $contenedor->appendChild($adjuntosList);
 
         // aplica los cambios realizados al DOM en un nuevo buffer para actualizar la presentación
         // del la vista del componente en el contexto indicado
