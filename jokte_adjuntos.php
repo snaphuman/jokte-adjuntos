@@ -34,14 +34,14 @@ class plgSystemJokte_Adjuntos extends JPlugin {
 
         // obtiene los parámetros del request e inicializa valores predeterminados para
         // el contexto de edición de un artículo
-        $reqParams = $jinput->getArray(array('view' => 'article','layout' => 'edit'));
+        $reqParams = $jinput->getArray(array('view' => '','layout' => ''));
 
         // termina la ejecución del plugin si los parametros recibidos no cumplen
         // con las condiciones preestablecidas para modificar el contexto de edición de
         // artículos
-        if (array_search(NULL,$reqParams)) return;
+        if ($reqParams["view"] != "article" || $reqParams["layout"] != "edit") return;
 
-        // Obtiene id del artículo 
+        // Obtiene id del artículo
         $id = $jinput->get('id', null, null);
 
         // obtiene el buffer del documento que será renderizado
