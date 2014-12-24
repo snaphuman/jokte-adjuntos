@@ -9,6 +9,7 @@
 defined('_JEXEC') or die('Acceso directo a este archivo restringido');
 
 jimport('joomla.plugin.plugin');
+jimport('joomla.form.form');
 
 class plgSystemJokte_Adjuntos extends JPlugin {
 
@@ -56,16 +57,22 @@ class plgSystemJokte_Adjuntos extends JPlugin {
         // obtiene los datos de los adjuntos
         $data = self::getAttachmentsData($id);
 
+        // Construye el Objeto Formulario 
+        $form = self::buildXMLFormDefinition($data);
+        var_dump($form);
+
         // selecciona elemento del DOM  que contendrá los registros de los archivos adjuntos
         $contenedor = $dom->getElementById("adjuntos");
 
         // realiza la construcción de la tabla con el listado de adjuntos
-
+        
         $adjuntosList = $dom->createElement("form");
-        $adjuntosList->setAttribute("id","list-adjuntos");
+        $adjuntosList->setAttribute("id","adjuntos-list");
+        $adjuntosList->setAttribute("class","form-validate");
 
         $tabla = $dom->createElement("table");
         $tbody = $dom->createElement("tbody");
+
 
         $c = 0;
         foreach($data as $item){
@@ -73,23 +80,7 @@ class plgSystemJokte_Adjuntos extends JPlugin {
             $row = $dom->createElement("tr");
 
             $check = $dom->createElement("td");
-            $checkBox = $dom->createElement("input");
-            $checkBox->setAttribute("type", "checkbox");
 
-            $file = $dom->createElement("td");
-            $file->nodeValue = $item->nombre_archivo;
-
-            $fileType = $dom->createElement("td");
-            $img = $dom->createElement("img");
-            $img->setAttribute("src", "/media/adjuntos/caneca.png");
-
-            $fileType->appendChild($img);
-            $check->appendChild($checkBox);
-            $row->appendChild($check);
-            $row->appendChild($file);
-            $row->appendChild($fileType);
-
-            $tbody->appendChild($row);
             $c++;
         }
 
@@ -112,5 +103,27 @@ class plgSystemJokte_Adjuntos extends JPlugin {
         $adjuntos = $data->mostrar($id);
 
         return $adjuntos;
+    }
+
+    private function buildXmlFormDefinition ($data) {
+
+        $xml   = "<?xml version='1.0' encoding='utf-8' ?>";
+        $xml  .= "<form>";
+        $xml  .= "</form>";
+
+        $formXML = new SimpleXMLElement($xml);
+
+        foreach ($data as $item) {
+            $field = $formXML->addChild(field);
+            $field->addAttribute('type', 'checkbox');
+            $field->addAttribute('label', 'Label con nombre de Archivo');
+            $field->addAttribute('name', 'adjunto');
+        }
+
+        $form = new JForm('adjuntos-list');
+
+        $form->load($formXML);
+
+        return $form;
     }
 }
