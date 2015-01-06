@@ -47,8 +47,11 @@ class plgSystemJokte_Adjuntos extends JPlugin {
         // Obtiene id del artículo
         $id = $jinput->get('id', null, null);
 
-        // obtiene el buffer del documento que será renderizado
         $doc = JFactory::getDocument();
+
+        $doc->addStyleSheet(JURI::root().'plugins/system/jokte_adjuntos/assets/css/estilos.css');
+
+        // obtiene el buffer del documento que será renderizado
         $buffer = mb_convert_encoding($doc->getBuffer('component'),'html-entities','utf-8');
 
         // inicializa la manipulación del DOM para el buffer del documento

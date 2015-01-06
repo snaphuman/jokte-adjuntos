@@ -11,5 +11,8 @@
 
     <files>
         <filename plugin="jokte_adjuntos">jokte_adjuntos.php</filename>
+        <folder>assets</folder>
+        <folder>assets/css</folder>
+        <filename>assets/css/estilos.css</filename>
     </files>
 </extension>
