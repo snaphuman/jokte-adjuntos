@@ -10,6 +10,8 @@ defined('_JEXEC') or die('Acceso directo a este archivo restringido');
 
 jimport('joomla.plugin.plugin');
 jimport('joomla.form.form');
+jimport('joomla.form.helper');
+jimport('joomla.utilities.simplexml');
 
 class plgSystemJokte_Adjuntos extends JPlugin {
 
@@ -57,36 +59,49 @@ class plgSystemJokte_Adjuntos extends JPlugin {
         // obtiene los datos de los adjuntos
         $data = self::getAttachmentsData($id);
 
-        // Construye el Objeto Formulario 
+        // Construye el Objeto Formulario
         $form = self::buildXMLFormDefinition($data);
-        var_dump($form);
 
         // selecciona elemento del DOM  que contendrá los registros de los archivos adjuntos
         $contenedor = $dom->getElementById("adjuntos");
 
         // realiza la construcción de la tabla con el listado de adjuntos
-        
-        $adjuntosList = $dom->createElement("form");
-        $adjuntosList->setAttribute("id","adjuntos-list");
-        $adjuntosList->setAttribute("class","form-validate");
-
         $tabla = $dom->createElement("table");
         $tbody = $dom->createElement("tbody");
-
 
         $c = 0;
         foreach($data as $item){
 
             $row = $dom->createElement("tr");
-
             $check = $dom->createElement("td");
+            $file = $dom->createElement("td");
+
+            $fileType = $dom->createElement("td");
+            $fileTypeImg = $dom->createElement("img");
+            $fileTypeImg->setAttribute('src','http://placehold.it/20x20');
+            $fileType->appendChild($fileTypeImg);
+
+            $field = $form->getInput('adjunto['.$c.']', 'attachments');
+            $fieldFragment = $dom->createDocumentFragment();
+            $fieldFragment->appendXML($field);
+            $check->appendChild($fieldFragment);
+
+            $label = $form->getLabel('adjunto['.$c.']','attachments');
+            $labelFragment = $dom->createDocumentFragment();
+            $labelFragment->appendXML($label);
+            $file->appendChild($labelFragment);
+
+            $row->appendChild($check);
+            $row->appendChild($file);
+            $row->appendChild($fileType);
+
+            $tbody->appendChild($row);
 
             $c++;
         }
 
         $tabla->appendChild($tbody);
-        $adjuntosList->appendChild($tabla);
-        $contenedor->appendChild($adjuntosList);
+        $contenedor->appendChild($tabla);
 
         // aplica los cambios realizados al DOM en un nuevo buffer para actualizar la presentación
         // del la vista del componente en el contexto indicado
@@ -107,22 +122,27 @@ class plgSystemJokte_Adjuntos extends JPlugin {
 
     private function buildXmlFormDefinition ($data) {
 
-        $xml   = "<?xml version='1.0' encoding='utf-8' ?>";
-        $xml  .= "<form>";
-        $xml  .= "</form>";
+        $xml = JPATH_COMPONENT_ADMINISTRATOR . DS . 'models' . DS . 'forms' . DS . 'article.xml';
 
-        $formXML = new SimpleXMLElement($xml);
+        $form = JForm::getInstance('jform', $xml);
 
+        $elements = array();
+
+        $c=0;
         foreach ($data as $item) {
-            $field = $formXML->addChild(field);
+            $field = new SimpleXMLElement('<field></field>');
+            
             $field->addAttribute('type', 'checkbox');
-            $field->addAttribute('label', 'Label con nombre de Archivo');
-            $field->addAttribute('name', 'adjunto');
+            $field->addAttribute('label', $item->nombre_archivo);
+            $field->addAttribute('name', 'adjunto['.$c.']');
+            $field->addAttribute('value', $item->hash);
+
+            array_push($elements, $field);
+
+            $c++;
         }
 
-        $form = new JForm('adjuntos-list');
-
-        $form->load($formXML);
+        $form->setFields($elements,'attachments');
 
         return $form;
     }
