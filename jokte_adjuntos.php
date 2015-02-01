@@ -62,9 +62,6 @@ class plgSystemJokte_Adjuntos extends JPlugin {
         // obtiene los datos de los adjuntos
         $data = self::getAttachmentsData($id);
 
-        // Construye el Objeto Formulario
-        $form = self::buildXMLFormDefinition($data);
-
         // selecciona elemento del DOM  que contendrá los registros de los archivos adjuntos
         $contenedor = $dom->getElementById("adjuntos");
 
@@ -75,28 +72,51 @@ class plgSystemJokte_Adjuntos extends JPlugin {
         $c = 0;
         foreach($data as $item){
 
+            $itemId = 'item-'.$c;
+
             $row = $dom->createElement("tr");
-            $check = $dom->createElement("td");
+            $row->setAttribute('id', $itemId);
+            $mime = $dom->createElement("td");
             $file = $dom->createElement("td");
+            $info = $dom->createElement("td");
+            $info->setAttribute('class', 'center');
+            $trash = $dom->createElement("td");
+            $trash->setAttribute('class', 'center');
 
-            $fileType = $dom->createElement("td");
-            $fileTypeImg = $dom->createElement("img");
-            $fileTypeImg->setAttribute('src','http://placehold.it/20x20');
-            $fileType->appendChild($fileTypeImg);
+            $mimeImg = $dom->createElement("img");
+            $mimeImg->setAttribute('src','http://placehold.it/20x20');
+            $mime->appendChild($mimeImg);
 
-            $field = $form->getInput('adjunto['.$c.']', 'attachments');
-            $fieldFragment = $dom->createDocumentFragment();
-            $fieldFragment->appendXML($field);
-            $check->appendChild($fieldFragment);
+            $name = $dom->createElement("span");
+            $nameAnchor = $dom->createElement("a");
+            $nameAnchor->setAttribute('href', '/uploads/'.$item->hash.'-'.$item->nombre_archivo);
+            $nameAnchor->setAttribute('target','_blank');
+            $nameAnchor->nodeValue = $item->nombre_archivo;
+            $name->appendChild($nameAnchor);
+            $file->appendChild($name);
 
-            $label = $form->getLabel('adjunto['.$c.']','attachments');
-            $labelFragment = $dom->createDocumentFragment();
-            $labelFragment->appendXML($label);
-            $file->appendChild($labelFragment);
+            $infoBtn = $dom->createElement("button");
+            $infoBtn->setAttribute('onclick', 'showInfo()');
+            $infoBtn->setAttribute('title', 'Información');
+            $infoImg = $dom->createElement("img");
+            $infoImg->setAttribute('src', JURI::root() . '/media/adjuntos/file-info-icon.png');
+            $infoBtn->appendChild($infoImg);
+            $info->appendChild($infoBtn);
 
-            $row->appendChild($check);
+            $trashBtn = $dom->createElement("button");
+            $trashBtn->setAttribute('onclick', 'eliminarAdjunto(this, event)');
+            $trashBtn->setAttribute('title', 'Eliminar archivo');
+            $trashBtn->setAttribute('data-hash', $item->hash);
+            $trashBtn->setAttribute('data-id', $itemId);
+            $trashImg = $dom->createElement("img");
+            $trashImg->setAttribute('src', JURI::root() . '/media/adjuntos/caneca.png');
+            $trashBtn->appendChild($trashImg);
+            $trash->appendChild($trashBtn);
+
+            $row->appendChild($mime);
             $row->appendChild($file);
-            $row->appendChild($fileType);
+            $row->appendChild($info);
+            $row->appendChild($trash);
 
             $tbody->appendChild($row);
 
@@ -123,30 +143,4 @@ class plgSystemJokte_Adjuntos extends JPlugin {
         return $adjuntos;
     }
 
-    private function buildXmlFormDefinition ($data) {
-
-        $xml = JPATH_COMPONENT_ADMINISTRATOR . DS . 'models' . DS . 'forms' . DS . 'article.xml';
-
-        $form = JForm::getInstance('jform', $xml);
-
-        $elements = array();
-
-        $c=0;
-        foreach ($data as $item) {
-            $field = new SimpleXMLElement('<field></field>');
-            
-            $field->addAttribute('type', 'checkbox');
-            $field->addAttribute('label', $item->nombre_archivo);
-            $field->addAttribute('name', 'adjunto['.$c.']');
-            $field->addAttribute('value', $item->hash);
-
-            array_push($elements, $field);
-
-            $c++;
-        }
-
-        $form->setFields($elements,'attachments');
-
-        return $form;
-    }
 }
