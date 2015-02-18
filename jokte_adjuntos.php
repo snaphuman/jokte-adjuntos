@@ -12,6 +12,7 @@ jimport('joomla.plugin.plugin');
 jimport('joomla.form.form');
 jimport('joomla.form.helper');
 jimport('joomla.utilities.simplexml');
+jimport('joomla.filesystem.mime');
 
 class plgSystemJokte_Adjuntos extends JPlugin {
 
@@ -74,6 +75,8 @@ class plgSystemJokte_Adjuntos extends JPlugin {
 
             $itemId = 'item-'.$c;
 
+            $iconSrc = JMime::checkIcon($item->mime_type);
+
             $row = $dom->createElement("tr");
             $row->setAttribute('id', $itemId);
             $mime = $dom->createElement("td");
@@ -84,7 +87,7 @@ class plgSystemJokte_Adjuntos extends JPlugin {
             $trash->setAttribute('class', 'center');
 
             $mimeImg = $dom->createElement("img");
-            $mimeImg->setAttribute('src','http://placehold.it/20x20');
+            $mimeImg->setAttribute('src', $iconSrc);
             $mime->appendChild($mimeImg);
 
             $name = $dom->createElement("span");
