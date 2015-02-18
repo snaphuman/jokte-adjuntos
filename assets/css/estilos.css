@@ -52,7 +52,11 @@
 }
 
 .nombre-archivo {
+    font-size: 1.3em;
+    line-height: 1em;
+    margin-top: 3px;
     padding: 0 40px;
+    word-wrap: break-word;
 }
 
 .uploaded .btn-adjunto {
@@ -85,4 +89,13 @@
 #adjuntos table td.center button {
     display: block;
     margin: auto;
+}
+
+#adjuntos .mime-icon img {
+    margin: 0;
+}
+
+#adjuntos .mime-icon {
+    float: left;
+    margin: 3px 5px;
 }
